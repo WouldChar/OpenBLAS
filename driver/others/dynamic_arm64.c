@@ -90,6 +90,11 @@ extern gotoblas_t  gotoblas_TSV110;
 #else
 #define gotoblas_TSV110 gotoblas_ARMV8
 #endif
+#ifdef DYN_HIP12
+extern gotoblas_t  gotoblas_HIP12;
+#else
+#define gotoblas_HIP12 gotoblas_ARMV8
+#endif
 #ifdef DYN_THUNDERX
 extern gotoblas_t  gotoblas_THUNDERX;
 #else
@@ -197,17 +202,20 @@ extern gotoblas_t  gotoblas_NEOVERSEV1;
 extern gotoblas_t  gotoblas_NEOVERSEN2;
 extern gotoblas_t  gotoblas_ARMV8SVE;
 extern gotoblas_t  gotoblas_A64FX;
+extern gotoblas_t  gotoblas_HIP12;
 #else
 #define gotoblas_NEOVERSEV1 gotoblas_ARMV8
 #define gotoblas_NEOVERSEN2 gotoblas_ARMV8
 #define gotoblas_ARMV8SVE   gotoblas_ARMV8
 #define gotoblas_A64FX      gotoblas_ARMV8
+#define gotoblas_HIP12      gotoblas_ARMV8
 #endif
 #else
 #define gotoblas_NEOVERSEV1 gotoblas_ARMV8
 #define gotoblas_NEOVERSEN2 gotoblas_ARMV8
 #define gotoblas_ARMV8SVE   gotoblas_ARMV8
 #define gotoblas_A64FX      gotoblas_ARMV8
+#define gotoblas_HIP12      gotoblas_ARMV8
 #endif
 #ifndef NO_SME
 extern gotoblas_t  gotoblas_ARMV9SME;
@@ -232,7 +240,7 @@ extern void openblas_warning(int verbose, const char * msg);
 #define FALLBACK_VERBOSE 1
 #define NEOVERSEN1_FALLBACK "OpenBLAS : Your OS does not support SVE instructions. OpenBLAS is using Neoverse N1 kernels as a fallback, which may give poorer performance.\n"
 
-#define NUM_CORETYPES   21
+#define NUM_CORETYPES   22
 
 /*
  * In case asm/hwcap.h is outdated on the build system, make sure
@@ -274,6 +282,7 @@ static char *corename[] = {
   "armv9sme",
   "vortex",
   "vortexm4",
+  "hip12",
   "unknown"
 };
 
@@ -299,6 +308,7 @@ char *gotoblas_corename(void) {
   if (gotoblas == &gotoblas_ARMV9SME)     return corename[18];
   if (gotoblas == &gotoblas_VORTEX)     return corename[19];
   if (gotoblas == &gotoblas_VORTEXM4)     return corename[20];
+  if (gotoblas == &gotoblas_HIP12)        return corename[21];
   return corename[NUM_CORETYPES];
 }
 
@@ -339,6 +349,7 @@ static gotoblas_t *force_coretype(char *coretype) {
     case 18: return (&gotoblas_ARMV9SME);
     case 19: return (&gotoblas_VORTEX);
     case 20: return (&gotoblas_VORTEXM4);
+    case 21: return (&gotoblas_HIP12);
   }
   snprintf(message, 128, "Core not found: %s\n", coretype);
   openblas_warning(1, message);
@@ -506,6 +517,10 @@ static gotoblas_t *get_coretype(void) {
       {
         case 0xd01: // tsv110
           return &gotoblas_TSV110;
+#ifndef NO_SVE
+        case 0xd06: // hip12
+          return &gotoblas_HIP12;
+#endif
       }
       break;
     case 0x50: // Ampere/AppliedMicro

@@ -77,6 +77,7 @@ size_t length64=sizeof(value64);
 #define CPU_THUNDERX3T110 12
 //Hisilicon
 #define CPU_TSV110        9
+#define CPU_HIP12        27
 // Ampere
 #define CPU_EMAG8180	 10
 #define CPU_AMPERE1      25
@@ -116,6 +117,7 @@ static char *cpuname[] = {
   "NEOVERSEV2",
   "AMPERE1",
   "VORTEXM4",
+  "HIP12",
 };
 
 static char *cpuname_lower[] = {
@@ -145,7 +147,8 @@ static char *cpuname_lower[] = {
   "cortexa76",
   "neoversev2",
   "ampere1",
-  "vortexm4"
+  "vortexm4",
+  "hip12"
 };
 
 static int cpulowperf=0;
@@ -342,6 +345,8 @@ int detect(void)
     // HiSilicon
     else if (strstr(cpu_implementer, "0x48") && strstr(cpu_part, "0xd01"))
                         return CPU_TSV110;
+    else if (strstr(cpu_implementer, "0x48") && strstr(cpu_part, "0xd06"))
+                        return CPU_HIP12;
     // Ampere
     else if (strstr(cpu_implementer, "0x50") && strstr(cpu_part, "0x000"))
                         return CPU_EMAG8180;
@@ -708,6 +713,24 @@ void get_cpuconfig(void)
 		printf("#define DTB_DEFAULT_ENTRIES  64       \n");
 		printf("#define DTB_SIZE             4096     \n");
 		break;	
+
+	    case CPU_HIP12:
+		printf("#define HIP12                          \n");
+		printf("#define HAVE_SVE 1                     \n");
+		printf("#define L1_CODE_SIZE         131072    \n");
+		printf("#define L1_CODE_LINESIZE     64        \n");
+		printf("#define L1_CODE_ASSOCIATIVE  4         \n");
+		printf("#define L1_DATA_SIZE         65536     \n");
+		printf("#define L1_DATA_LINESIZE     64        \n");
+		printf("#define L1_DATA_ASSOCIATIVE  4         \n");
+		printf("#define L2_SIZE              1048576   \n");
+		printf("#define L2_LINESIZE          64        \n");
+		printf("#define L2_ASSOCIATIVE       8         \n");
+		printf("#define L3_SIZE              23855104  \n");
+		printf("#define L3_LINESIZE          64        \n");
+		printf("#define DTB_DEFAULT_ENTRIES  64        \n");
+		printf("#define DTB_SIZE             4096      \n");
+		break;
 
 	    case CPU_EMAG8180:
      		 // Minimum parameters for ARMv8 (based on A53)

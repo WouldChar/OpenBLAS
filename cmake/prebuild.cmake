@@ -1209,6 +1209,33 @@ endif ()
     set(ZGEMM_UNROLL_M 4)
     set(ZGEMM_UNROLL_N 4)
     set(SYMV_P 16)
+  elseif ("${TCORE}" STREQUAL "HIP12")
+    file(APPEND ${TARGET_CONF_TEMP}
+      "#define HIP12\n"
+      "#define ARMV8\n"
+      "#define HAVE_SVE\n"
+      "#define L1_CODE_SIZE\t131072\n"
+      "#define L1_CODE_LINESIZE\t64\n"
+      "#define L1_CODE_ASSOCIATIVE\t4\n"
+      "#define L1_DATA_SIZE\t65536\n"
+      "#define L1_DATA_LINESIZE\t64\n"
+      "#define L1_DATA_ASSOCIATIVE\t4\n"
+      "#define L2_SIZE\t1048576\n"
+      "#define L2_LINESIZE\t64\n"
+      "#define L2_ASSOCIATIVE\t8\n"
+      "#define L3_SIZE\t23855104\n"
+      "#define L3_LINESIZE\t64\n"
+      "#define DTB_DEFAULT_ENTRIES\t64\n"
+      "#define DTB_SIZE\t4096\n")
+    set(SGEMM_UNROLL_M 16)
+    set(SGEMM_UNROLL_N 4)
+    set(DGEMM_UNROLL_M 8)
+    set(DGEMM_UNROLL_N 4)
+    set(CGEMM_UNROLL_M 8)
+    set(CGEMM_UNROLL_N 4)
+    set(ZGEMM_UNROLL_M 4)
+    set(ZGEMM_UNROLL_N 4)
+    set(SYMV_P 16)
   elseif ("${TCORE}" STREQUAL "EMAG8180")
     file(APPEND ${TARGET_CONF_TEMP}
       "#define ARMV8\n"
