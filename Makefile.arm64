@@ -214,6 +214,17 @@ endif
 endif
 endif
 
+# HiSilicon hip12 (implementer 0x48, part 0xd06). Enable Armv8.3 complex
+# arithmetic and SVE for the selected OpenBLAS kernels.
+ifeq ($(CORE), HIP12)
+ifneq ($(DYNAMIC_ARCH), 1)
+CCOMMON_OPT += -march=armv8.3-a+sve
+ifneq ($(F_COMPILER), NAG)
+FCOMMON_OPT += -march=armv8.3-a+sve
+endif
+endif
+endif
+
 # Detect ARM Neoverse V2.
 ifeq ($(CORE), NEOVERSEV2)
 ifeq (1, $(filter 1,$(GCCVERSIONGTEQ13) $(ISCLANG)))

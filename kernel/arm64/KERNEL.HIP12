@@ -1,0 +1,41 @@
+# Use ThunderX2T99 as the base kernel set for HIP12.
+include $(KERNELDIR)/KERNEL.THUNDERX2T99
+
+# Override non-transposed real GEMV and real SYMV with SVE implementations.
+SGEMVNKERNEL = gemv_n_sve_v1x3.c
+DGEMVNKERNEL = gemv_n_sve_v1x3.c
+SSYMV_L_KERNEL = symv_L_sve_v1x4.c
+SSYMV_U_KERNEL = symv_U_sve_v1x4.c
+DSYMV_L_KERNEL = symv_L_sve_v1x4.c
+DSYMV_U_KERNEL = symv_U_sve_v1x4.c
+
+SGEMM_SMALL_M_PERMIT = gemm_small_kernel_permit_sve.c
+SGEMM_SMALL_K_NT = sgemm_small_kernel_nt_sve.c
+SGEMM_SMALL_K_B0_NT = sgemm_small_kernel_nt_sve.c
+SGEMM_SMALL_K_NN = sgemm_small_kernel_nn_sve.c
+SGEMM_SMALL_K_B0_NN = sgemm_small_kernel_nn_sve.c
+SGEMM_SMALL_K_TT = sgemm_small_kernel_tt_sve.c
+SGEMM_SMALL_K_B0_TT = sgemm_small_kernel_tt_sve.c
+SGEMM_SMALL_K_TN = sgemm_small_kernel_tn_sve.c
+SGEMM_SMALL_K_B0_TN = sgemm_small_kernel_tn_sve.c
+
+DGEMM_SMALL_M_PERMIT = gemm_small_kernel_permit_sve.c
+DGEMM_SMALL_K_NT = dgemm_small_kernel_nt_sve.c
+DGEMM_SMALL_K_B0_NT = dgemm_small_kernel_nt_sve.c
+DGEMM_SMALL_K_NN = dgemm_small_kernel_nn_sve.c
+DGEMM_SMALL_K_B0_NN = dgemm_small_kernel_nn_sve.c
+DGEMM_SMALL_K_TT = dgemm_small_kernel_tt_sve.c
+DGEMM_SMALL_K_B0_TT = dgemm_small_kernel_tt_sve.c
+DGEMM_SMALL_K_TN = dgemm_small_kernel_tn_sve.c
+DGEMM_SMALL_K_B0_TN = dgemm_small_kernel_tn_sve.c
+
+# Use the C swap kernels selected by ARMV8SVE for real data.
+SSWAPKERNEL = swap.c
+DSWAPKERNEL = swap.c
+
+# Use the generic AArch64 assembly NRM2 kernels instead of the ThunderX2 C
+# implementations.
+SNRM2KERNEL = nrm2.S
+DNRM2KERNEL = nrm2.S
+CNRM2KERNEL = znrm2.S
+ZNRM2KERNEL = znrm2.S
