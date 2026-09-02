@@ -611,9 +611,31 @@ static int round_up(int remainder, int width, int multiple)
 }
 
 
+static inline int get_gemm_switch_ratio(BLASLONG m, BLASLONG n,
+                                        BLASLONG nthreads) {
+#if defined(DYNAMIC_ARCH)
+  int switch_ratio = gotoblas->switch_ratio;
+  int gemm_switch_ratio = gotoblas->gemm_switch_ratio;
+#else
+  int switch_ratio = SWITCH_RATIO;
+  int gemm_switch_ratio = GEMM_SWITCH_RATIO;
+#endif
+
+  /* A larger ratio only helps when both output dimensions can sustain the
+     resulting two-dimensional partition. Keep the original ratio for narrow
+     matrices instead of forcing undersized partitions along their short side. */
+  if (gemm_switch_ratio > switch_ratio &&
+      MIN(m, n) < gemm_switch_ratio * sqrt((double)nthreads)) {
+    return switch_ratio;
+  }
+  return gemm_switch_ratio;
+}
+
+
 static int gemm_driver(blas_arg_t *args, BLASLONG *range_m, BLASLONG
 		       *range_n, IFLOAT *sa, IFLOAT *sb,
-                       BLASLONG nthreads_m, BLASLONG nthreads_n) {
+                       BLASLONG nthreads_m, BLASLONG nthreads_n,
+                       int switch_ratio) {
 
   blas_arg_t newarg;
 
@@ -635,12 +657,6 @@ static int gemm_driver(blas_arg_t *args, BLASLONG *range_m, BLASLONG
   BLASLONG width, width_n, i, j, k, js;
   BLASLONG m, n, n_from, n_to;
   int mode;
-#if defined(DYNAMIC_ARCH)
-  int switch_ratio = gotoblas->switch_ratio;
-#else
-  int switch_ratio = SWITCH_RATIO;
-#endif
-
   /* Get execution mode */
 #ifndef COMPLEX
 #ifdef XDOUBLE
@@ -815,11 +831,7 @@ int CNAME(blas_arg_t *args, BLASLONG *range_m, BLASLONG *range_n, IFLOAT *sa, IF
   BLASLONG m = args -> m;
   BLASLONG n = args -> n;
   BLASLONG nthreads_m, nthreads_n;
-#if defined(DYNAMIC_ARCH)
-  int switch_ratio = gotoblas->switch_ratio;
-#else
-  int switch_ratio = SWITCH_RATIO;
-#endif
+  int switch_ratio;
 
   /* Get dimensions from index ranges if available */
   if (range_m) {
@@ -828,6 +840,8 @@ int CNAME(blas_arg_t *args, BLASLONG *range_m, BLASLONG *range_n, IFLOAT *sa, IF
   if (range_n) {
     n = range_n[1] - range_n[0];
   }
+
+  switch_ratio = get_gemm_switch_ratio(m, n, args -> nthreads);
 
   /* Partitions in m should have at least switch_ratio rows */
   if (m < 2 * switch_ratio) {
@@ -875,7 +889,8 @@ int CNAME(blas_arg_t *args, BLASLONG *range_m, BLASLONG *range_n, IFLOAT *sa, IF
     GEMM_LOCAL(args, range_m, range_n, sa, sb, 0);
   } else {
     args -> nthreads = nthreads_m * nthreads_n;
-    gemm_driver(args, range_m, range_n, sa, sb, nthreads_m, nthreads_n);
+    gemm_driver(args, range_m, range_n, sa, sb, nthreads_m, nthreads_n,
+                switch_ratio);
   }
 
   return 0;

@@ -329,6 +329,16 @@ endif
 endif
 endif
 
+ifeq ($(CORE), HIP09)
+ifeq ($(NO_SVE), 1)
+$(error HIP09 requires SVE ACLE support)
+endif
+CCOMMON_OPT += -march=armv8.3-a+sve
+ifneq ($(F_COMPILER), NAG)
+FCOMMON_OPT += -march=armv8.3-a+sve
+endif
+endif
+
 ifeq (1, $(filter 1,$(GCCVERSIONGTEQ9) $(ISCLANG)))
 ifeq ($(CORE), EMAG8180)
 CCOMMON_OPT += -march=armv8-a
@@ -441,6 +451,10 @@ endif
 ifeq ($(CORE), ARMV9SVE)
 CCOMMON_OPT += -tp=neoverse-v2
 FCOMMON_OPT += -tp=neoverse-v2
+endif
+ifeq ($(CORE), HIP09)
+CCOMMON_OPT += -Msve_intrinsics -march=armv8.3-a+sve
+FCOMMON_OPT += -march=armv8.3-a+sve
 endif
 
 endif

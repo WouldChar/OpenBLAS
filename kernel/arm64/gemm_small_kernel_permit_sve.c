@@ -31,7 +31,13 @@ int CNAME(int transa, int transb, BLASLONG M, BLASLONG N, BLASLONG K, FLOAT alph
 {
   BLASLONG MNK = M * N * K;
 
-#if defined(DOUBLE) // dgemm
+#if defined(HIP09)
+  /* The direct beta-zero NN SVE kernel avoids packing overhead for very small
+     GEMM. Keep a conservative work limit below its measured crossover with
+     the packed path on HIP09. */
+  if (transa == 0 && transb == 0 && beta == 0.0 && MNK <= 24*24*24)
+    return 1;
+#elif defined(DOUBLE) // dgemm
   if (MNK <= 64*64*64)
     return 1;
 #else // sgemm
