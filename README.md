@@ -179,6 +179,7 @@ Please read `GotoBLAS_01Readme.txt` for older CPU models already supported by th
 - **ThunderX2T99**: Optimized Level-3 BLAS and parts of Levels 1 and 2
 - **ThunderX3T110**
 - **TSV110**: Optimized some Level-3 helper functions
+- **HIP09**: HiSilicon 0xd02 core used by Kunpeng 920B; requires Armv8.3-A with SVE and reuses mature ARM64 kernels
 - **EMAG 8180**: preliminary support based on A57
 - **Neoverse N1**: (AWS Graviton2) preliminary support
 - **Neoverse V1**: (AWS Graviton3) optimized Level-3 BLAS
@@ -268,7 +269,7 @@ For **x86_64**, the list of targets this activates contains Prescott, Core2, Neh
 `DYNAMIC_ARCH` is also supported on **x86**, where it translates to Katmai, Coppermine, Northwood, Prescott, Banias,
 Core2, Penryn, Dunnington, Nehalem, Athlon, Opteron, Opteron_SSE3, Barcelona, Bobcat, Atom and Nano.
 
-On **ARMV8**, it enables support for CortexA53, CortexA57, CortexA72, CortexA73, Falkor, ThunderX, ThunderX2T99, TSV110 as well as generic ARMV8 cpus. If compiler support for SVE is available at build time, support for NeoverseN2, NeoverseV1 as well as generic ArmV8SVE targets is also enabled.
+On **ARMV8**, it enables support for CortexA53, CortexA57, CortexA72, CortexA73, Falkor, ThunderX, ThunderX2T99, TSV110 as well as generic ARMV8 cpus. If compiler support for SVE is available at build time, support for HIP09, NeoverseN2, NeoverseV1 as well as generic ArmV8SVE targets is also enabled.
 
 For **POWER**, the list encompasses POWER6, POWER8 and POWER9. POWER10 is additionally available if a sufficiently recent compiler is used for the build.
 

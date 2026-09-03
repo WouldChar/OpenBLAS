@@ -206,7 +206,7 @@ static inline int get_gemm_optimal_nthreads_neoversev1(double MNK, int ncpu) {
 }
 #endif
 
-#if defined(DYNAMIC_ARCH) || defined(NEOVERSEV2)
+#if defined(DYNAMIC_ARCH) || defined(NEOVERSEV2) || defined(HIP09)
 static inline int get_gemm_optimal_nthreads_neoversev2(double MNK, int ncpu) {
   return
       MNK < 125000L     ? 1
@@ -230,11 +230,18 @@ static inline int get_gemm_optimal_nthreads(double MNK) {
   return get_gemm_optimal_nthreads_neoversev1(MNK, ncpu);
 #elif defined(NEOVERSEV2) && !defined(COMPLEX) && !defined(DOUBLE) && !defined(BFLOAT16) && !defined(HFLOAT16)
   return get_gemm_optimal_nthreads_neoversev2(MNK, ncpu);
-#elif defined(DYNAMIC_ARCH) && !defined(COMPLEX) && !defined(DOUBLE) && !defined(BFLOAT16) && !defined(HFLOAT16)
+#elif defined(HIP09) && !defined(BFLOAT16) && !defined(HFLOAT16)
+  return get_gemm_optimal_nthreads_neoversev2(MNK, ncpu);
+#elif defined(DYNAMIC_ARCH) && !defined(BFLOAT16) && !defined(HFLOAT16)
+#if !defined(COMPLEX) && !defined(DOUBLE)
   if (strcmp(gotoblas_corename(), "neoversev1") == 0) {
     return get_gemm_optimal_nthreads_neoversev1(MNK, ncpu);
   }
   if (strcmp(gotoblas_corename(), "neoversev2") == 0) {
+    return get_gemm_optimal_nthreads_neoversev2(MNK, ncpu);
+  }
+#endif
+  if (strcmp(gotoblas_corename(), "hip09") == 0) {
     return get_gemm_optimal_nthreads_neoversev2(MNK, ncpu);
   }
 #endif

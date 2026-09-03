@@ -288,3 +288,6 @@ hheei <hheei@users.noreply.github.com>
 
 * Hugo Meiland <hugo@meiland.nl>
   * [2026-08-09] Add Cortex-A72 DGEMM 6x8 microkernel and blocking
+
+* WouldChar <https://github.com/WouldChar>
+  * [2026-08-28] Add HIP09 target support for Kunpeng 920B

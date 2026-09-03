@@ -107,7 +107,15 @@ static inline int get_dot_optimal_nthreads_a64fx(BLASLONG N, int ncpu) {
 #endif
 
 static inline int get_dot_optimal_nthreads(BLASLONG n) {
-  int ncpu = num_cpu_avail(1);
+  int ncpu;
+
+  /* Every architecture-specific policy uses one thread through this range.
+     Avoid CPU discovery and dynamic-core dispatch on the latency-sensitive
+     path while preserving the common compute path below. */
+  if (n <= 10000L)
+    return 1;
+
+  ncpu = num_cpu_avail(1);
 
 #if defined(A64FX) && !defined(COMPLEX) && !defined(BFLOAT16)
   return get_dot_optimal_nthreads_a64fx(n, ncpu);
@@ -124,11 +132,7 @@ static inline int get_dot_optimal_nthreads(BLASLONG n) {
   }
 #endif
 
-  // Default case
-  if (n <= 10000L)
-    return 1;
-  else
-    return ncpu;
+  return ncpu;
 }
 #endif
 
