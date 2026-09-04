@@ -3714,6 +3714,10 @@ is a big desktop or server with abundant cache rather than a phone or embedded d
 #define CGEMM_DEFAULT_R 4096
 #define ZGEMM_DEFAULT_R 4096
 
+#ifdef HIP12
+#define GEMM_SWITCH_RATIO 16
+#endif
+
 #elif defined(THUNDERX3T110)
 
 #define SGEMM_DEFAULT_UNROLL_M  16
@@ -4436,6 +4440,10 @@ Until then, just keep it different than DGEMM_DEFAULT_UNROLL_N to keep copy rout
 
 #ifndef SWITCH_RATIO
 #define SWITCH_RATIO 2
+#endif
+
+#ifndef GEMM_SWITCH_RATIO
+#define GEMM_SWITCH_RATIO SWITCH_RATIO
 #endif
 
 #ifndef GEMM_DIVIDE_RATE

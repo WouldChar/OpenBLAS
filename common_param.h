@@ -1278,6 +1278,7 @@ int (*shgemv_t) (BLASLONG, BLASLONG, float, hfloat16 *, BLASLONG, hfloat16 *, BL
 #if (BUILD_COMPLEX16==1)
   int    (*zgeadd_k) (BLASLONG, BLASLONG, double, double, double *, BLASLONG, double, double, double *, BLASLONG, BLASLONG, BLASLONG); 
 #endif
+  int gemm_switch_ratio;
 } gotoblas_t;
 
 extern gotoblas_t *gotoblas;
