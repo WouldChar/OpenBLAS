@@ -76,6 +76,7 @@
 //#endif
 
 #ifdef THREADED_LEVEL3
+#define USE_GEMM_SWITCH_RATIO
 #include "level3_thread.c"
 #else
 #include "level3.c"
